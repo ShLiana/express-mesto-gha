@@ -4,7 +4,7 @@ const { ERROR_STATUS } = require('../utils/errors');
 // Получить все карточки
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.status(ERROR_STATUS.OK).send({ data: cards }))
     .catch(next);
 };
 
