@@ -4,7 +4,7 @@ const { ERROR_STATUS } = require('../utils/errors');
 // Получить всех пользователей
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.status(ERROR_STATUS.OK).send({ data: users }))
     .catch(next);
 };
 
