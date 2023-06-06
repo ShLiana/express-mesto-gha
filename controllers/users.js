@@ -56,7 +56,7 @@ const getUserById = (req, res) => {
 // Обновить аватар пользователя
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  return User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+  return User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => {
       if (user) {
         res.status(ERROR_STATUS.OK).send(user);
@@ -79,9 +79,40 @@ const updateAvatar = (req, res) => {
     });
 };
 
+// Обновляем данные профиля пользователя
+const updateProfileInfo = (req, res) => {
+  const { name, about } = req.body;
+  return User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
+    .then((user) => {
+      if (user) {
+        res.status(ERROR_STATUS.OK).send(user);
+      } else {
+        res
+          .status(ERROR_STATUS.NOT_FOUND)
+          .send({ message: 'Пользователь не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_STATUS.BAD_REQUEST).send({
+          message: 'Некорректный запрос при обновлении информации о пользователе',
+        });
+      } else {
+        res
+          .status(ERROR_STATUS.SERVER_ERROR)
+          .send({ message: 'На сервере произошла ошибка' });
+      }
+    });
+};
+
 module.exports = {
   getUsers,
   addNewUser,
   getUserById,
   updateAvatar,
+  updateProfileInfo,
 };
