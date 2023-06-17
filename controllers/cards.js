@@ -1,5 +1,8 @@
 const Card = require('../models/card');
-const { ERROR_STATUS } = require('../utils/errors');
+const { ERROR_STATUS } = require('../utils/errorsConstantsName');
+const BadRequestError = require('../utils/errors/BadRequestError');
+const NotFound = require('../utils/errors/NotFound');
+const ForbiddenError = require('../utils/errors/ForbiddenError');
 
 // Получить все карточки
 const getCards = (req, res, next) => {
@@ -9,7 +12,7 @@ const getCards = (req, res, next) => {
 };
 
 // Добавить новую карточку
-const addNewCard = (req, res) => {
+const addNewCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   return Card.create({ name, link, owner })
@@ -18,100 +21,74 @@ const addNewCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_STATUS.BAD_REQUEST).send({
-          message: 'Введены некорректные данные при добавлении карточки',
-        });
-      } else {
-        res.status(ERROR_STATUS.SERVER_ERROR).send({
-          message: 'На сервере произошла ошибка',
-        });
+        return next(new BadRequestError('Введены некорректные данные при добавлении карточки'));
       }
+      return next(err);
     });
 };
 
 // Поставить лайк карточке
-const addCardLike = (req, res) => {
+const addCardLike = (req, res, next) => {
   // Метод поиска по id и обновления документа
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
+    { new: true })
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_STATUS.NOT_FOUND)
-          .send({ message: 'Карточка не найдена' });
-        return;
+        throw new NotFound('Карточка не найдена');
       }
       res.status(ERROR_STATUS.OK).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(ERROR_STATUS.BAD_REQUEST)
-          .send({ message: 'Некорректный запрос' });
-      } else {
-        res
-          .status(ERROR_STATUS.SERVER_ERROR)
-          .send({ message: 'На сервере произошла ошибка' });
+        return next(new BadRequestError('Введены некорректные данные'));
       }
+      return next(err);
     });
 };
 
 // Удалить лайк с карточки
-const deleteCardLike = (req, res) => {
+const deleteCardLike = (req, res, next) => {
   // Метод поиска по id и обновления карточки
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true },
-  )
+    { new: true })
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_STATUS.NOT_FOUND)
-          .send({ message: 'Карточка не найдена' });
-        return;
+        throw new NotFound('Карточка не найдена');
       }
       res.status(ERROR_STATUS.OK).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(ERROR_STATUS.BAD_REQUEST)
-          .send({ message: 'Некорректный запрос' });
-      } else {
-        res
-          .status(ERROR_STATUS.SERVER_ERROR)
-          .send({ message: 'На сервере произошла ошибка' });
+        return next(new BadRequestError('Некорректный запрос'));
       }
+      return next(err);
     });
 };
 
 // Удалить карточку
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   // Метод поиска по id и удаления карточки
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res
-          .status(ERROR_STATUS.NOT_FOUND)
-          .send({ message: 'Карточка не найдена' });
-        return;
+        throw new NotFound('Карточка не найдена');
       }
-      res.status(ERROR_STATUS.OK).send({ data: card });
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenError('Вы не можете удалять чужие карточки');
+      }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.send({ message: 'Карточка удалена' }))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(ERROR_STATUS.BAD_REQUEST)
-          .send({ message: 'Некорректный запрос' });
-      } else {
-        res
-          .status(ERROR_STATUS.SERVER_ERROR)
-          .send({ message: 'На сервере произошла ошибка' });
+        return next(new BadRequestError('Некорректный запрос'));
       }
+      return next(err);
     });
 };
 

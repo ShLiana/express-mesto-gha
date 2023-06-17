@@ -7,10 +7,14 @@ const {
   deleteCardLike,
 } = require('../controllers/cards');
 
-router.get('/cards', getCards); // возвращает все карточки
-router.post('/cards', addNewCard); // создаёт карточку
-router.delete('/cards/:cardId', deleteCard); // удаляет карточку по идентификатору
-router.put('/cards/:cardId/likes', addCardLike); // поставить лайк карточке
-router.delete('/cards/:cardId/likes', deleteCardLike); // убрать лайк с карточки
+const {
+  createCardValidation, cardIdValidation,
+} = require('../middlewares/dataValidation');
+
+router.get('/', getCards); // возвращает все карточки
+router.post('/', createCardValidation, addNewCard); // создаёт карточку
+router.delete('/:cardId', cardIdValidation, deleteCard); // удаляет карточку по идентификатору
+router.put('/:cardId/likes', cardIdValidation, addCardLike); // поставить лайк карточке
+router.delete('/:cardId/likes', cardIdValidation, deleteCardLike); // убрать лайк с карточки
 
 module.exports = router;

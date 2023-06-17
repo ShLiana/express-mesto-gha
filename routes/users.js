@@ -2,15 +2,21 @@ const router = require('express').Router();
 const {
   getUsers,
   getUserById,
-  addNewUser,
   updateAvatar,
   updateProfileInfo,
+  getCurrentUser,
 } = require('../controllers/users');
 
-router.get('/users', getUsers); // возвращает всех пользователей
-router.get('/users/:userId', getUserById); // возвращает пользователя по _id
-router.post('/users', addNewUser); // создаёт пользователя
-router.patch('/users/me/avatar', updateAvatar); // обновляет аватар
-router.patch('/users/me', updateProfileInfo); // обновляет информацию в профиле
+const {
+  userIdValidation,
+  userProfileInfoValidation,
+  updateAvatarValidation,
+} = require('../middlewares/dataValidation');
+
+router.get('/', getUsers); // вернуть всех пользователей
+router.get('/:userId', userIdValidation, getUserById); // вернуть пользователя по _id
+router.patch('/me/avatar', updateAvatarValidation, updateAvatar); // обновлить аватарку
+router.patch('/me', userProfileInfoValidation, updateProfileInfo); // обновить данные профиля
+router.get('/me', getCurrentUser); // вернуть данные текущего пользователя
 
 module.exports = router;
