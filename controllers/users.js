@@ -14,7 +14,7 @@ const getUsers = (req, res, next) => {
 };
 
 // Добавить нового пользователя
-const addNewUser = (req, res, next) => {
+const createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -149,7 +149,7 @@ const updateProfileInfo = (req, res, next) => {
 
 module.exports = {
   getUsers,
-  addNewUser,
+  createUser,
   getUserById,
   updateAvatar,
   updateProfileInfo,

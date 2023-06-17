@@ -2,14 +2,14 @@
 const { celebrate, Joi } = require('celebrate');
 const { regex } = require('../utils/errorsConstantsName');
 
-const signinValidation = celebrate({
+const signinDataValidation = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6),
+    password: Joi.string().required().min(4),
   }),
 });
 
-const signupValidation = celebrate({
+const signupDataValidation = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
@@ -21,7 +21,7 @@ const signupValidation = celebrate({
 
 const userIdValidation = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
+    userId: Joi.string().length(24).hex(),
   }),
 });
 
@@ -47,13 +47,13 @@ const createCardValidation = celebrate({
 
 const cardIdValidation = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
+    cardId: Joi.string().required().hex().length(24),
   }),
 });
 
 module.exports = {
-  signinValidation,
-  signupValidation,
+  signinDataValidation,
+  signupDataValidation,
   userIdValidation,
   userProfileInfoValidation,
   updateAvatarValidation,
