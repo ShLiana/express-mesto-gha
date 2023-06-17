@@ -58,7 +58,7 @@ const login = (req, res, next) => {
         expiresIn: '7d',
       });
       // вернём токен
-      res.send({ token });
+      res.send({ _id: token });
     })
     .catch(next);
 };
