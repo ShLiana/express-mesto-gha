@@ -14,9 +14,9 @@ const {
 } = require('../middlewares/dataValidation');
 
 router.get('/', getUsers); // вернуть всех пользователей
+router.get('/me', getCurrentUser); // вернуть данные текущего пользователя
 router.get('/:userId', userIdValidation, getUserById); // вернуть пользователя по _id
 router.patch('/me/avatar', updateAvatarValidation, updateAvatar); // обновлить аватарку
 router.patch('/me', userProfileInfoValidation, updateProfileInfo); // обновить данные профиля
-router.get('/me', getCurrentUser); // вернуть данные текущего пользователя
 
 module.exports = router;
