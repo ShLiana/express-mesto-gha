@@ -8,6 +8,6 @@ const ERROR_STATUS = {
   CONFLICT: 409,
 };
 
-const regex = /^https?:\/\/(www\.)?[0-9a-zA-Z]+([.|-]{1}[0-9a-zA-Z]+)*\.[0-9a-zA-Z-]+(\/[0-9a-zA-Z\-._~:/?#[\]@!$&'()*+,;=]*#?)?$/;
+const regexAvatarLink = /^https?:\/\/(www\.)?[0-9a-zA-Z]+([.|-]{1}[0-9a-zA-Z]+)*\.[0-9a-zA-Z-]+(\/[0-9a-zA-Z\-._~:/?#[\]@!$&'()*+,;=]*#?)?$/;
 
-module.exports = { ERROR_STATUS, regex };
+module.exports = { ERROR_STATUS, regexAvatarLink };

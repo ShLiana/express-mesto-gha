@@ -74,7 +74,7 @@ const getCurrentUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.code === 11000) {
         return next(new BadRequestError('Введены некорректные данные поиска'));
       }
       return next(err);
