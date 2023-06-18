@@ -23,7 +23,8 @@ const addNewCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(
           new BadRequestError(
-            'Введены некорректные данные при добавлении карточки')
+            'Введены некорректные данные при добавлении карточки',
+          ),
         );
       }
       return next(err);
@@ -36,7 +37,7 @@ const addCardLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -58,7 +59,7 @@ const deleteCardLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
